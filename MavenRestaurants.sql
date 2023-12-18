@@ -1,10 +1,9 @@
 /*
 Restaurant Investment Data Analysis
 
-
 */
 
--- Step 1: Restaurant Count per City
+-- Restaurant Count per City
 -- Identifies the number of restaurants in each city, highlighting potential market saturation or opportunities.
 
 SELECT 
@@ -17,13 +16,12 @@ GROUP BY
 ORDER BY 
     RestaurantCount DESC;
 
-
--- Step 2: Total Cuisine Types in Each City
+-- Total Cuisine Types in Each City
 -- Determines the diversity of cuisines in each city, indicating market variety or oversaturation of certain cuisines.
 
 SELECT 
     res.City AS City, 
-    COUNT(DISTINCT rc.Cuisine) AS CuisineTypes
+    COUNT(DISTINCT rc.Cuisine) AS DifferentCuisines
 FROM 
     restaurant_cuisines AS rc
 JOIN 
@@ -31,10 +29,9 @@ JOIN
 GROUP BY 
     City
 ORDER BY 
-    CuisineTypes DESC;
+    DifferentCuisines DESC;
 
-
--- Step 3: Highest Rated Cuisine in Each City
+-- Highest Rated Cuisine in Each City
 -- Finds the top-rated cuisine in each city to identify potential high performers.
 
 SELECT 
@@ -52,8 +49,7 @@ GROUP BY
 ORDER BY 
     City, AverageRating DESC;
 
-
--- Step 4: Top Rated Cuisines Excluding Mexican and with More Than One Restaurant
+-- Top Rated Cuisines Excluding Mexican and with More Than One Restaurant
 -- Filters out Mexican cuisine and focuses on cuisines with more than one restaurant to avoid flukes.
 
 SELECT 
@@ -73,6 +69,44 @@ HAVING
 ORDER BY 
     AverageRating DESC, NumberOfRestaurants DESC;
 
+-- Consumer Cuisine Preferences
+-- Assesses the most preferred cuisines among consumers in each city.
 
--- Insights and Recommendations:
--- Analysis indicates San Luis Potosi has a high concentration of restaurants, suggesting market saturation. In contrast, Jiutepec has fewer restaurants, indicating room for new ventures. Mexican cuisine is prevalent but also oversaturated. Alternative cuisines such as Family, International, Japanese, Brewery, and Contemporary, being the top 5 non-Mexican cuisines with more than one restaurant, present safer investment opportunities. These choices are supported by popularity and high average ratings, indicative of demand and customer satisfaction.
+SELECT 
+    c.City AS City, 
+    cp.Preferred_Cuisine AS PreferredCuisine, 
+    COUNT(*) AS PreferenceCount
+FROM 
+    consumer_preferences AS cp
+JOIN 
+    consumers AS c ON cp.Consumer_ID = c.Consumer_ID
+GROUP BY 
+    City, PreferredCuisine
+ORDER BY 
+    City, PreferenceCount DESC;
+
+-- Analysis of Oversaturated Cuisines
+-- Identifies cuisines that are overly common in each city, potentially indicating market saturation.
+
+SELECT 
+    res.City AS City,
+    rc.Cuisine AS Cuisine, 
+    COUNT(DISTINCT rc.Restaurant_ID) AS RestaurantCount
+FROM 
+    restaurant_cuisines AS rc
+JOIN 
+    restaurants AS res ON rc.Restaurant_ID = res.Restaurant_ID
+GROUP BY 
+    City, Cuisine
+HAVING 
+    RestaurantCount > (SELECT AVG(Count) FROM (SELECT COUNT(*) AS Count FROM restaurant_cuisines GROUP BY Cuisine) AS AverageCount)
+ORDER BY 
+    City, RestaurantCount DESC;
+
+--The analysis indicates optimal investment opportunities in cities like Ciudad Victoria and Cuernavaca, where restaurant markets are less saturated. San Luis Potosi shows a high density of restaurants, particularly Mexican cuisine, suggesting market saturation. Diversifying into underrepresented cuisines such as Family, International, Japanese, Brewery, and Contemporary, which are popular but less common, presents a promising strategy for new restaurant ventures.
+
+
+
+
+
+
