@@ -1,4 +1,5 @@
 Maven Restaurant Investment Analysis Challenge
+
 Project Overview
 This project, part of the Maven Restaurant Challenge, involves a detailed analysis of a fictional dataset provided by Maven Analytics. As the Lead Analyst for a firm investing in new restaurant opportunities abroad, the goal is to study the restaurant market in several Mexican cities. The analysis focuses on uncovering patterns and trends to understand the market dynamics and to aid in making informed investment decisions.
 
